@@ -52,8 +52,7 @@ end
 user_dirs = [
   node['neo4j']['server_data'],
   node['neo4j']['server_ssl'],
-  node['neo4j']['server_lock'],
-  node['neo4j']['server_logs']
+  node['neo4j']['server_lock']
 ]
 
 user_dirs.each do |dir|
@@ -92,10 +91,6 @@ link "#{node['neo4j']['server_path']}/conf" do
   to node['neo4j']['server_etc']
 end
 
-link "#{node['neo4j']['server_path']}/data/log" do
-  to node['neo4j']['server_logs']
-end
-
 link "#{node['neo4j']['server_etc']}/ssl" do
   to node['neo4j']['server_ssl']
 end
@@ -108,6 +103,9 @@ template "#{node['neo4j']['server_etc']}/logging.properties" do
   source "logging.properties.erb"
   owner "root"
   group "root"
+  variables(
+    :log_pattern           => node['neo4j']['log_pattern']
+  )
   mode 0444
 end
 
@@ -129,6 +127,11 @@ template "#{node['neo4j']['server_etc']}/neo4j-server.properties" do
   source "neo4j-server.properties.erb"
   owner "root"
   group "root"
+  variables(
+    :server_ip           => node['neo4j']['server_listen'],
+    :server_port_http    => node['neo4j']['server_port_http'],
+    :server_port_https   => node['neo4j']['server_port_https']
+  )
   mode 0444
 end
 
@@ -139,7 +142,7 @@ template "#{node['neo4j']['server_etc']}/neo4j-wrapper.conf" do
   mode 0444
 end
 
-execute "setting the systems ulimits" do 
+execute "setting the systems ulimits" do
   # http://wiki.basho.com/Open-Files-Limit.html
   user "root"
   group "root"
