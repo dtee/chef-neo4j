@@ -46,6 +46,7 @@ root_dirs.each do |dir|
     owner "root"
     group "root"
     mode "0755"
+    recursive true
   end
 end
 
@@ -60,6 +61,7 @@ user_dirs.each do |dir|
     owner node['neo4j']['server_user']
     group node['neo4j']['server_group']
     mode "0755"
+    recursive true
   end
 end
 
