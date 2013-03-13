@@ -80,6 +80,7 @@ execute "install neo4j sources #{node['neo4j']['server_file']}" do
     chown -R root:root neo4j-community-#{node['neo4j']['server_version']}
     cd neo4j-community-#{node['neo4j']['server_version']}
     mv -f bin/* #{node['neo4j']['server_bin']}
+    rm -rf #{node['neo4j']['server_path']}/doc #{node['neo4j']['server_path']}/lib #{node['neo4j']['server_path']}/system
     mv -f doc lib system #{node['neo4j']['server_path']}
   EOF
   action :run
