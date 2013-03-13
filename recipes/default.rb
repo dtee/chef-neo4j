@@ -65,24 +65,24 @@ user_dirs.each do |dir|
   end
 end
 
-unless FileTest.exists?("#{node['neo4j']['server_bin']}/neo4j")
+unless node['neo4j']['server_download']
   remote_file "#{Chef::Config[:file_cache_path]}/#{node['neo4j']['server_file']}" do
     source node['neo4j']['server_download']
   end
+end
 
-  execute "install neo4j sources #{node['neo4j']['server_file']}" do
-    user "root"
-    group "root"
-    cwd Chef::Config[:file_cache_path]
-    command <<-EOF
-      tar -zxf #{node['neo4j']['server_file']}
-      chown -R root:root neo4j-community-#{node['neo4j']['server_version']}
-      cd neo4j-community-#{node['neo4j']['server_version']}
-      mv -f bin/* #{node['neo4j']['server_bin']}
-      mv -f doc lib system #{node['neo4j']['server_path']}
-    EOF
-    action :run
-  end
+execute "install neo4j sources #{node['neo4j']['server_file']}" do
+  user "root"
+  group "root"
+  cwd Chef::Config[:file_cache_path]
+  command <<-EOF
+    tar -zxf #{node['neo4j']['server_file']}
+    chown -R root:root neo4j-community-#{node['neo4j']['server_version']}
+    cd neo4j-community-#{node['neo4j']['server_version']}
+    mv -f bin/* #{node['neo4j']['server_bin']}
+    mv -f doc lib system #{node['neo4j']['server_path']}
+  EOF
+  action :run
 end
 
 link "#{node['neo4j']['server_path']}/data" do
